@@ -12,12 +12,14 @@
 ;;; url
 
 (defn url [text]
-  (let [url (str "https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob"
-                 "&q=" (java.net.URLEncoder/encode text))]
-    url))
+  (str "https://translate.google.com/translate_tts"
+       "?ie=" "UTF-8"
+       "&client=" "tw-ob"
+       "&tl=" "en-US"
+       "&q=" (java.net.URLEncoder/encode text)))
 
 (comment
-  (url "build failed"))
+  (url "hello world"))
 
 ;;; download
 
@@ -28,46 +30,57 @@
     file))
 
 (comment
-  (download (url "hello") "/home/witek/inbox/test.mp3"))
+  (download (url "test") "/tmp/test.mp3"))
 
 ;;; play
 
+(defn play-with- [& cmd]
+  (when (-> cmd first io/file .exists)
+    (let [result (apply process/shell cmd)]
+      (-> result :exit (= 0)))))
+
 (defn play [file-path]
-  (process/shell "/usr/bin/play" "-q" file-path))
+  (or
+
+   (play-with- "/usr/bin/play"
+               "-q" file-path)
+
+   (play-with- "/usr/bin/ffplay"
+               "-v" "0"
+               "-nodisp"
+               "-autoexit"
+               file-path)
+
+   (play-with- "/usr/bin/vlc"
+               "-q"
+               "--intf" "dummy"
+               "--play-and-exit"
+               file-path)))
 
 (comment
-  (play "/home/witek/inbox/test.mp3"))
+  (play "/tmp/test.mp3"))
 
 ;;; combine
 
 (defn say [text]
   (let [file-path (-> (java.io.File/createTempFile "gtsay_" ".mp3")
                       .toString)
-        url (url text)
-        ]
+        url (url text)]
     (try
       (download url file-path)
       (play file-path)
       (finally
         (let [file (io/file file-path)]
           (when (-> file .exists)
-            (-> file .delete)))))
-
-    )
-  )
+            (-> file .delete)))))))
 
 (comment
-  (say "hello isabella"))
+  (say "thank you borkdude"))
 
 ;;; cli
 
 (def cli-options
-  ;; An option with a required argument
-  [["-p" "--port PORT" "Port number"
-    :default 80
-    :parse-fn #(Integer/parseInt %)
-    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
-   ["-h" "--help"]])
+  [])
 
 (def opts (cli/parse-opts *command-line-args* cli-options))
 (def arguments (-> opts :arguments seq))
