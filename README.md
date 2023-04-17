@@ -1,4 +1,4 @@
-This repository contains some babashka scripts.
+This repository contains a collection of tools (for (Clojure) developers).
 
 ---
 
@@ -9,7 +9,7 @@ Text-to-Speech
 Install with [bbin](https://github.com/babashka/bbin):
 
 ```
-bbin install https://raw.githubusercontent.com/witek/bbtools/main/gtsay.clj
+bbin install https://raw.githubusercontent.com/witek/tools/main/gtsay.clj
 ```
 
 Usage Example:
