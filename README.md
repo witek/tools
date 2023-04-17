@@ -6,6 +6,8 @@ This repository contains a collection of tools (for (Clojure) developers).
 
 Text-to-Speech
 
+[![bb compatible](https://raw.githubusercontent.com/babashka/babashka/master/logo/badge.svg)](https://babashka.org)
+
 Install with [bbin](https://github.com/babashka/bbin):
 
 ```
